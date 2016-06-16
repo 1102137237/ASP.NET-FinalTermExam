@@ -1,0 +1,120 @@
+﻿@model HomeWork.Models.OrderSearch
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        table, td, th {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        @using (Html.BeginForm("Index", "Order", FormMethod.Post, new { name = "myForm" }))
+        {
+            <table >
+                <tr>
+                    <td>訂單編號</td>
+                    <td colspan="3">@Html.TextBoxFor(Models => Models.OrderID)</td>
+                </tr>
+                <tr>
+                    <td>客戶名稱</td>
+                    <td colspan="3">@Html.TextBoxFor(Models => Models.CustomerName)</td>
+                </tr>
+                <tr>
+                    <td>負責員工</td>
+                    <td colspan="3">@Html.DropDownListFor(Models => Models.EmployeeID, (List<SelectListItem>)ViewData["EmpData"])</td>
+                </tr>
+                <tr>
+                    <td>出貨公司</td>
+                    <td colspan="3">@Html.DropDownListFor(Models => Models.ShipperID, (List<SelectListItem>)ViewData["ShipperData"])</td>
+                </tr>
+                <tr>
+                    <td>訂購日期</td>
+                    <td>@Html.TextBoxFor(Models => Models.OrderDate, new { @type = "date" })</td>
+                    <td>出貨日期</td>
+                    <td>@Html.TextBoxFor(Models => Models.ShippedDate, new { @type = "date" })</td>
+                </tr>
+                <tr>
+                    <td>需要日期</td>
+                    <td colspan="3">@Html.TextBoxFor(Models => Models.RequiredDate, new { @type = "date" })</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td colspan="3">
+                        <input type="submit" value="查詢" />
+                        <input id="Reset1" type="reset" value="清除" onclick="form1.reset()" />
+                        <button>@Html.ActionLink("新增訂單", "InsertOrder")</button>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+    <div>
+
+
+        @if (ViewBag.SearchResult != null)
+            {
+            <table >
+                <tr>
+                    <td>訂單編號</td>
+                    <td>客戶名稱</td>
+                    <td>訂購日期</td>
+                    <td>發貨日期</td>
+                    <td></td>
+                </tr>
+                @foreach (var item in (List<HomeWork.Models.Order>)ViewBag.SearchResult)
+                {
+                    <tr id='@item.OrderID'>
+                        <td>@item.OrderID</td>
+                        <td>@item.CustomerName</td>
+                        <td>@item.OrderDate</td>
+                        <td>@item.ShippedDate</td>
+                        <td>
+                            <a class="btnDelete" href="#">刪除</a>
+                            <input class="hidOrderId" type="hidden" value='@item.OrderID' />
+                            @Html.ActionLink("修改", "UpdateOrder", new { OrderID = @item.OrderID })
+                        </td>
+
+                    </tr>
+                }
+
+            </table>
+        }
+
+        
+    </div>
+    <script type="text/javascript">
+
+
+    $(".btnDelete").click(function (e) {
+
+        var tr = $(this).closest('tr')
+        $.ajax({
+            type: "POST",
+            url: "/Order/DeleteOrder",
+            data: "OrderID=" + $(this).next().val(),
+            dataType: "json",
+            success: function (response) {
+                $(tr).remove();
+            }
+        });
+        return false;
+    });
+
+    </script>
+
+</body>
+</html>

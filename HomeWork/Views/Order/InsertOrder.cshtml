@@ -1,0 +1,238 @@
+﻿@model HomeWork.Models.Order
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <title>InsertOrder</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        table, td, th {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        @using (Html.BeginForm("InsertOrder", "Order", FormMethod.Post, new { name = "InsertOrder" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <table>
+                <tr>
+                    <td>客戶名稱</td>
+                    <td colspan="3">
+                        @Html.DropDownListFor(Models => Models.CustomerID, (List<SelectListItem>)ViewData["CustomerData"])
+                        @Html.ValidationMessageFor(Models => Models.CustomerID)
+                    </td>
+                </tr>
+                <tr>
+                    <td>負責員工名稱</td>
+                    <td colspan="3">
+                        @Html.DropDownListFor(Models => Models.EmployeeID, (List<SelectListItem>)ViewData["EmpData"])
+                        @Html.ValidationMessageFor(Models => Models.EmployeeID)
+                    </td>
+                </tr>
+                <tr>
+                    <td>訂單日期</td>
+                    <td>
+                        @Html.TextBoxFor(Models => Models.OrderDate, new { @type = "date" })
+                        @Html.ValidationMessageFor(Models => Models.OrderDate)
+                    </td>
+                    <td>需要日期</td>
+                    <td>
+                        @Html.TextBoxFor(Models => Models.RequiredDate, new { @type = "date" })
+                        @Html.ValidationMessageFor(Models => Models.RequiredDate)
+                    </td>
+                </tr>
+                <tr>
+                    <td>出貨日期</td>
+                    <td colspan="3">
+                        @Html.TextBoxFor(Models => Models.ShippedDate, new { @type = "date" })
+                        @Html.ValidationMessageFor(Models => Models.ShippedDate)
+                    </td>
+                </tr>
+                <tr>
+                    <td>出貨公司名稱</td>
+                    <td colspan="3">
+                        @Html.DropDownListFor(Models => Models.ShipperID, (List<SelectListItem>)ViewData["ShipperData"])
+                        @Html.ValidationMessageFor(Models => Models.ShipperID)
+                    </td>
+                </tr>
+                <tr>
+                    <td>運費</td>
+                    <td colspan="3">
+                        @Html.TextBoxFor(Models => Models.Freight)
+                        @Html.ValidationMessageFor(Models => Models.Freight)
+                    </td>
+                </tr>
+                <tr>
+                    <td>出貨國家</td>
+                    <td>
+                        @Html.TextBoxFor(Models => Models.ShipCountry)
+                        @Html.ValidationMessageFor(Models => Models.ShipCountry)
+                    </td>
+                    <td>出貨城市</td>
+                    <td>
+                        @Html.TextBoxFor(Models => Models.ShipCity)
+                        @Html.ValidationMessageFor(Models => Models.ShipCity)
+                    </td>
+                </tr>
+                <tr>
+                    <td>出貨地區</td>
+                    <td>
+                        @Html.TextBoxFor(Models => Models.ShipRegion)
+                        @Html.ValidationMessageFor(Models => Models.ShipRegion)
+                    </td>
+                    <td>郵遞區號</td>
+                    <td>
+                        @Html.TextBoxFor(Models => Models.ShipPostalCode)
+                        @Html.ValidationMessageFor(Models => Models.ShipPostalCode)
+                    </td>
+                </tr>
+                <tr>
+                    <td>出貨地址</td>
+                    <td>
+                        @Html.TextBoxFor(Models => Models.ShipAddress)
+                        @Html.ValidationMessageFor(Models => Models.ShipAddress)
+                    </td>
+                    <td>出貨說明</td>
+                    <td>
+                        @Html.TextBoxFor(Models => Models.ShipName)
+                        @Html.ValidationMessageFor(Models => Models.ShipName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>訂單金額總計</td>
+                    <td colspan="3">
+                        <input type="text" id="total" />
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <input type="submit" value="存檔" />
+                        <button>@Html.ActionLink("回前一頁", "Index")</button>
+                    </td>
+                </tr>
+            </table>
+
+
+            <a id="addNewDetial" href="#">新增一筆</a>
+
+            <table class="table table-bordered">
+                <tr>
+                    <td>商品</td>
+                    <td>單價</td>
+                    <td>數量</td>
+                    <td>小計</td>
+                    <td></td>
+                </tr>
+                <tbody id="tbContent">
+
+                    @for (int i = 0; i < Model.OrderDetails.Count; i++)
+                    {
+                        <tr>
+                            <td>@Html.DropDownListFor(m => Model.OrderDetails[i].ProductID, (List<SelectListItem>)ViewData["ProductData"], new { @class = "ProductID", onchange = "GetPrice(this)" })</td>
+                            <td>@Html.TextBoxFor(m => Model.OrderDetails[i].UnitPrice, new { @class = "UnitPrice", @id = "UnitPrice", Value = ViewBag.PriceData[i].Value, onchange = "change(this)" })</td>
+                            <td>@Html.TextBoxFor(m => Model.OrderDetails[i].Qty, new { @class = "Qty", onchange = "Count(this)" })</td>
+                            <td>
+                                <input type="text" />
+                            </td>
+                            <td>
+                                <button type="button" class="btnRemove">取消</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+
+    @section scripts{
+        <script type="text/javascript">
+            //明細資料範本
+            var trtemplate = $('#tbContent tr').eq(0).html();
+
+            //新增一列名資料
+            $("#addNewDetial").click(function (e) {
+                //var count = $('#tbContent tr').length;
+                $('#tbContent').append('<tr>'+trtemplate+'</tr>');
+
+                @*for (var i = 0 ; i < $('#tbContent tr').length; i++) {
+                    if(i != $('#tbContent tr').length -1){
+                        continue;
+                    }
+                    $('.ProductID').eq(i).attr('name', 'OrderDetails[' + i + '].ProductID');
+                    $('.Qty').eq(i).attr('name', 'OrderDetails[' + i + '].Qty');
+                    $('.UnitPrice').eq(i).attr('name', 'OrderDetails[' + i + '].UnitPrice');
+                }*@
+            });
+
+            //移除TR
+            $('#tbContent').on('click', '.btnRemove', function () {
+                if ($('#tbContent tr').length > 1)
+                    $(this).closest('tr').remove();
+            });
+
+            //表單送出前置換element name 讓Action 可以讀到OrderDetials
+            $('form').submit(function () {
+            for (var i = 0 ; i < $('#tbContent tr').length; i++) {
+                $('.ProductID').eq(i).attr('name', 'OrderDetails[' + i + '].ProductID');
+                $('.Qty').eq(i).attr('name', 'OrderDetails[' + i + '].Qty');
+                $('.UnitPrice').eq(i).attr('name', 'OrderDetails[' + i + '].UnitPrice');
+            }
+            });
+            var sum=0;
+            var total=0;
+            //更改商品時，小計會跟著變化
+            function GetPrice(item) {
+                console.log(item.value);
+                var price=[];
+                var array = @Html.Raw(Json.Encode(@ViewBag.PriceData));
+
+                for(var i = 0 ;i<array.length;i++){
+                    price[i]=array[i].Value;
+                }
+                $(item).parent().next('td').children().val(price[item.value-1]);
+                var unitprice=$(item).parent().next('td').children().val();
+                var qty=$(item).parent().next('td').next('td').children().val();
+                total=unitprice*qty;
+                $(item).parent().next('td').next('td').next('td').children().val(total);
+                all();
+            }
+            //更改單價時，小計跟著變化
+            function change(item){
+                var unitprice=$(item).closest("input:text").val();
+                var qty=$(item).parent().next('td').children().val();
+                total=unitprice*qty;
+                $(item).parent().next('td').next('td').children().val(total);
+                all();
+            }
+            //更改數量時，小計跟著變化
+            function Count(item){
+                var unitprice=$(item).parent().prev('td').children().val();
+                var qty=$(item).closest("input:text").val();
+                total=unitprice*qty;
+                $(item).parent().next('td').children().val(total);
+                all();
+            }
+
+            function all(){
+                sum+=total;
+                document.getElementById('total').value=sum;
+            }
+        </script>
+    }
+
+</body>
+</html>
