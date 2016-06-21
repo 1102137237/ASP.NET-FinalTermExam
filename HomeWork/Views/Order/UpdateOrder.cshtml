@@ -30,6 +30,13 @@
             @Html.ValidationSummary(true)
             <table>
                 <tr>
+                    <td>訂單編號</td>
+                    <td colspan="3">
+                        @Html.TextBoxFor(Models => Models.OrderID, new { Value = ViewBag.OrderData.OrderID })
+                        @Html.ValidationMessageFor(Models => Models.OrderID)
+                    </td>
+                </tr>
+                <tr>
                     <td>客戶名稱</td>
                     <td colspan="3">
                         @Html.DropDownListFor(Models => Models.CustomerID, (List<SelectListItem>)ViewData["CustomerData"])
@@ -123,6 +130,7 @@
                     <td>
                         <input type="submit" value="存檔" />
                         <button>@Html.ActionLink("回前一頁", "Index")</button>
+                        <button>@Html.ActionLink("刪除訂單", "DeleteOrder2", new { OrderID = ViewBag.OrderData.OrderID })</button>
                     </td>
                 </tr>
             </table>
@@ -194,12 +202,13 @@
             });
 
             //表單送出前置換element name 讓Action 可以讀到OrderDetials
-
-            for (var i = 0 ; i < $('#tbContent tr').length; i++) {
-                $('.ProductID').eq(i).attr('name', 'OrderDetails[' + i + '].ProductID');
-                $('.Qty').eq(i).attr('name', 'OrderDetails[' + i + '].Qty');
-                $('.UnitPrice').eq(i).attr('name', 'OrderDetails[' + i + '].UnitPrice');
-            }
+            $('form').submit(function () {
+                for (var i = 0 ; i < $('#tbContent tr').length; i++) {
+                    $('.ProductID').eq(i).attr('name', 'OrderDetails[' + i + '].ProductID');
+                    $('.Qty').eq(i).attr('name', 'OrderDetails[' + i + '].Qty');
+                    $('.UnitPrice').eq(i).attr('name', 'OrderDetails[' + i + '].UnitPrice');
+                }
+            });
             var sum=0;
             var total=0;
             //更改商品時，小計會跟著變化

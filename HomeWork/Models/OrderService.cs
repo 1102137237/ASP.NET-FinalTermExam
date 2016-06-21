@@ -208,6 +208,65 @@ namespace HomeWork.Models
             return OrderID;
         }
 
+        public string UpdateOrder(Models.Order Order)
+        {
+            string sql = @" Update Sales.Orders
+                            SET CustomerID=@CustomerID,EmployeeID=@EmployeeID,OrderDate=@OrderDate,RequiredDate=@RequiredDate,ShippedDate=@ShippedDate,ShipperID=@ShipperID,
+                            Freight=@Freight,ShipCountry=@ShipCountry,ShipCity=@ShipCity,ShipRegion=@ShipRegion,ShipPostalCode=@ShipPostalCode,ShipAddress=@ShipAddress,ShipName=@ShipName
+                            Where OrderID=@OrderID
+						 ";
+
+            string sql2 = @" Insert INTO Sales.OrderDetails
+                             (
+                                OrderID,ProductID,UnitPrice,Qty
+                             )
+                             VALUES
+                             (
+                                @OrderID,@ProductID,@UnitPrice,@Qty
+                             )
+                           ";
+
+            using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
+            {
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                SqlCommand cmd2 = new SqlCommand(sql2, conn);
+
+                cmd.Parameters.Add(new SqlParameter("@OrderID", Order.OrderID));
+                cmd.Parameters.Add(new SqlParameter("@CustomerID", Order.CustomerID));
+                cmd.Parameters.Add(new SqlParameter("@EmployeeID", Order.EmployeeID));
+                cmd.Parameters.Add(new SqlParameter("@OrderDate", Order.OrderDate));
+                cmd.Parameters.Add(new SqlParameter("@RequiredDate", Order.RequiredDate));
+                cmd.Parameters.Add(new SqlParameter("@ShippedDate", Order.ShippedDate));
+                cmd.Parameters.Add(new SqlParameter("@ShipperID", Order.ShipperID));
+                cmd.Parameters.Add(new SqlParameter("@Freight", Order.Freight));
+                cmd.Parameters.Add(new SqlParameter("@ShipName", Order.ShipName));
+                cmd.Parameters.Add(new SqlParameter("@ShipAddress", Order.ShipAddress));
+                cmd.Parameters.Add(new SqlParameter("@ShipCity", Order.ShipCity));
+                cmd.Parameters.Add(new SqlParameter("@ShipRegion", Order.ShipRegion));
+                cmd.Parameters.Add(new SqlParameter("@ShipPostalCode", Order.ShipPostalCode));
+                cmd.Parameters.Add(new SqlParameter("@ShipCountry", Order.ShipCountry));
+
+                cmd.ExecuteNonQuery();
+
+                for (int i = 0; i < Order.OrderDetails.Count; i++)
+                {
+                    cmd2 = new SqlCommand(sql2, conn);
+                    cmd2.Parameters.Add(new SqlParameter("@OrderID", Order.OrderID));
+                    cmd2.Parameters.Add(new SqlParameter("@ProductID", Order.OrderDetails[i].ProductID));
+                    cmd2.Parameters.Add(new SqlParameter("@UnitPrice", Order.OrderDetails[i].UnitPrice));
+                    cmd2.Parameters.Add(new SqlParameter("@Qty", Order.OrderDetails[i].Qty));
+                    //cmd2.Parameters.Add(new SqlParameter("@Discount", Order.OrderDetails[i].Discount == null ? string.Empty : Order.OrderDetails[i].Discount));
+                    cmd2.ExecuteNonQuery();
+                }
+
+                conn.Close();
+            }
+
+            return "0";
+        }
+
         public void DeleteOrderByID(string OrderID)
         {
             try
@@ -228,6 +287,18 @@ namespace HomeWork.Models
             }
         }
 
-        
+        public void DeleteOrderDetial(Models.Order Order)
+        {
+            string sql = "Delete FROM Sales.OrderDetails Where OrderID=@OrderID";
+
+            using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.Add(new SqlParameter("@OrderID", Order.OrderID));
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+        }
     }
 }

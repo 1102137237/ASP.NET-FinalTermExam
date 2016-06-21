@@ -286,5 +286,22 @@ namespace HomeWork.Controllers
 
             return View();
         }
+
+        [HttpPost()]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateOrder(Models.Order Order)
+        {
+            Models.OrderService OrderService = new OrderService();
+            OrderService.DeleteOrderDetial(Order);
+            OrderService.UpdateOrder(Order);
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult DeleteOrder2(string OrderID)
+        {
+            OrderService OrderService = new OrderService();
+            OrderService.DeleteOrderByID(OrderID);
+            return RedirectToAction("Index");
+        }
     }
 }
