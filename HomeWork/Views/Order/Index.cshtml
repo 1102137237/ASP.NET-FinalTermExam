@@ -1,4 +1,4 @@
-﻿@model HomeWork.Models.OrderSearch
+﻿@model HomeWork.Models.Employee
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -9,7 +9,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
+    <title>1102137237</title>
     <style>
         table {
             border-collapse: collapse;
@@ -26,37 +26,28 @@
         {
             <table >
                 <tr>
-                    <td>訂單編號</td>
-                    <td colspan="3">@Html.TextBoxFor(Models => Models.OrderID)</td>
+                    <td>員工編號</td>
+                    <td colspan="3">@Html.TextBoxFor(Models => Models.EmployeeID)</td>
                 </tr>
                 <tr>
-                    <td>客戶名稱</td>
-                    <td colspan="3">@Html.TextBoxFor(Models => Models.CustomerName)</td>
+                    <td>員工姓名</td>
+                    <td colspan="3">@Html.TextBoxFor(Models => Models.Name)</td>
                 </tr>
                 <tr>
-                    <td>負責員工</td>
-                    <td colspan="3">@Html.DropDownListFor(Models => Models.EmployeeID, (List<SelectListItem>)ViewData["EmpData"])</td>
+                    <td>職稱</td>
+                    <td colspan="3">@Html.TextBoxFor(Models => Models.Val)</td>
                 </tr>
                 <tr>
-                    <td>出貨公司</td>
-                    <td colspan="3">@Html.DropDownListFor(Models => Models.ShipperID, (List<SelectListItem>)ViewData["ShipperData"])</td>
-                </tr>
-                <tr>
-                    <td>訂購日期</td>
-                    <td>@Html.TextBoxFor(Models => Models.OrderDate, new { @type = "date" })</td>
-                    <td>出貨日期</td>
-                    <td>@Html.TextBoxFor(Models => Models.ShippedDate, new { @type = "date" })</td>
-                </tr>
-                <tr>
-                    <td>需要日期</td>
-                    <td colspan="3">@Html.TextBoxFor(Models => Models.RequiredDate, new { @type = "date" })</td>
+                    <td>任職日期</td>
+                    <td>@Html.TextBoxFor(Models => Models.HireDate, new { @type = "date" })</td>
+                    <td>~</td>
                 </tr>
                 <tr>
                     <td></td>
                     <td colspan="3">
                         <input type="submit" value="查詢" />
                         <input id="Reset1" type="reset" value="清除" onclick="form1.reset()" />
-                        <button>@Html.ActionLink("新增訂單", "InsertOrder")</button>
+                        <button>@Html.ActionLink("新增員工", "InsertOrder")</button>
                     </td>
                 </tr>
             </table>
@@ -69,23 +60,25 @@
             {
             <table >
                 <tr>
-                    <td>訂單編號</td>
-                    <td>客戶名稱</td>
-                    <td>訂購日期</td>
-                    <td>發貨日期</td>
+                    <td>員工編號</td>
+                    <td>員工姓名</td>
+                    <td>職稱</td>
+                    <td>任職日期</td>
+                    <td>性別</td>
                     <td></td>
                 </tr>
-                @foreach (var item in (List<HomeWork.Models.Order>)ViewBag.SearchResult)
+                @foreach (var item in (List<HomeWork.Models.Employee>)ViewBag.SearchResult)
                 {
-                    <tr id='@item.OrderID'>
-                        <td>@item.OrderID</td>
-                        <td>@item.CustomerName</td>
-                        <td>@item.OrderDate</td>
-                        <td>@item.ShippedDate</td>
+                    <tr id='@item.EmployeeID'>
+                        <td>@item.EmployeeID</td>
+                        <td>@item.Name</td>
+                        <td>@item.Val</td>
+                        <td>@item.HireDate</td>
+                        <td>@item.Gender</td>
                         <td>
                             <a class="btnDelete" href="#">刪除</a>
-                            <input class="hidOrderId" type="hidden" value='@item.OrderID' />
-                            @Html.ActionLink("修改", "UpdateOrder", new { OrderID = @item.OrderID })
+                            <input class="hidOrderId" type="hidden" value='@item.EmployeeID' />
+                            @Html.ActionLink("修改", "UpdateOrder", new { EmployeeID = @item.EmployeeID })
                         </td>
 
                     </tr>
@@ -105,7 +98,7 @@
         $.ajax({
             type: "POST",
             url: "/Order/DeleteOrder",
-            data: "OrderID=" + $(this).next().val(),
+            data: "EmployeeID=" + $(this).next().val(),
             dataType: "json",
             success: function (response) {
                 $(tr).remove();

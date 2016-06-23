@@ -20,26 +20,22 @@ namespace HomeWork.Models
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public List<Models.Order> GetOrderByCondtioin(Models.OrderSearch arg)
+        public List<Models.Employee> GetEmploueeByCondtioin(Models.Employee arg)
         {
 
             DataTable dt = new DataTable();
-            string sql = @"select A.OrderID,B.CompanyName,A.OrderDate,A.ShippedDate from Sales.Orders A join Sales.Customers B on A.CustomerID=B.CustomerID where (A.OrderID Like @OrderID Or @OrderID='') And 
-						  (A.Orderdate=@Orderdate Or @Orderdate='') And (A.EmployeeID=@EmployeeID or @EmployeeID='') And (B.Companyname Like '%'+@CustomerName+'%' Or @CustomerName='' ) And (A.ShipperID Like @ShipperID Or @ShipperID='' )
-                          And (A.ShippedDate=@ShippedDate Or @ShippedDate='') And (A.RequiredDate=@RequiredDate Or @RequiredDate='')";
+            string sql = @"select A.EmployeeID,(A.FirstName+A.LastName) AS Name,(A.Title+'-'+B.CodeVal) as Val,A.HireDate,A.Gender from HR.Employees A join dbo.CodeTable B on A.Title=B.CodeId Where (B.CodeType like 'TITLE') And (A.EmployeeID=@EmployeeID or @EmployeeID='') And 
+                           ((A.FirstName+A.LastName) Like '%'+@Name+'%' Or @Name='') And ((A.Title+'-'+B.CodeVal) like @Val Or @Val='') And (A.HireDate=@HireDate Or @HireDate='') Order by EmployeeID";
 
 
             using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
             {
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
-                cmd.Parameters.Add(new SqlParameter("@OrderID", arg.OrderID == null ? string.Empty : arg.OrderID));
-                cmd.Parameters.Add(new SqlParameter("@OrderDate", arg.OrderDate == null ? string.Empty : arg.OrderDate));
-                cmd.Parameters.Add(new SqlParameter("@CustomerName", arg.CustomerName == null ? string.Empty : arg.CustomerName));
-                cmd.Parameters.Add(new SqlParameter("@ShipperID", arg.ShipperID == null ? string.Empty : arg.ShipperID));
                 cmd.Parameters.Add(new SqlParameter("@EmployeeID", arg.EmployeeID == null ? string.Empty : arg.EmployeeID));
-                cmd.Parameters.Add(new SqlParameter("@ShippedDate", arg.ShippedDate == null ? string.Empty : arg.ShippedDate));
-                cmd.Parameters.Add(new SqlParameter("@RequiredDate", arg.RequiredDate == null ? string.Empty : arg.RequiredDate));
+                cmd.Parameters.Add(new SqlParameter("@Name", arg.Name == null ? string.Empty : arg.Name));
+                cmd.Parameters.Add(new SqlParameter("@Val", arg.Val == null ? string.Empty : arg.Val));
+                cmd.Parameters.Add(new SqlParameter("@HireDate", arg.HireDate == null ? string.Empty : arg.HireDate));
                 SqlDataAdapter sqlAdapter = new SqlDataAdapter(cmd);
                 sqlAdapter.Fill(dt);
                 conn.Close();
@@ -75,19 +71,20 @@ namespace HomeWork.Models
             return this.MapOrderDataToList2(dt).FirstOrDefault();
         }
 
-        private List<Models.Order> MapOrderDataToList(DataTable orderData)
+        private List<Models.Employee> MapOrderDataToList(DataTable orderData)
         {
-            List<Models.Order> result = new List<Order>();
+            List<Models.Employee> result = new List<Employee>();
 
 
             foreach (DataRow row in orderData.Rows)
             {
-                result.Add(new Order()
+                result.Add(new Employee()
                 {
-                    OrderID = (int)row["OrderID"],
-                    CustomerName = row["CompanyName"].ToString(),
-                    OrderDate = row["OrderDate"] == DBNull.Value ? (DateTime?)null : (DateTime)row["OrderDate"],
-                    ShippedDate = row["ShippedDate"] == DBNull.Value ? (DateTime?)null : (DateTime)row["ShippedDate"],
+                    EmployeeID = (int)row["EmployeeID"],
+                    Name = row["Name"].ToString(),
+                    Val = row["Val"].ToString(),
+                    Gender = row["Gender"].ToString(),
+                    HireDate = row["HireDate"] == DBNull.Value ? (DateTime?)null : (DateTime)row["HireDate"],
                     /*CustomerID = (int)row["CustomerID"],
                     EmployeeID = (int)row["EmployeeID"],
                     //OrderDate = row["OrderDate"] == DBNull.Value ? (DateTime?)null : (DateTime)row["OrderDate"],
@@ -267,16 +264,16 @@ namespace HomeWork.Models
             return "0";
         }
 
-        public void DeleteOrderByID(string OrderID)
+        public void DeleteEmployeeByID(string EmployeeID)
         {
             try
             {
-                string sql = "Delete FROM Sales.OrderDetails Where OrderID=@OrderID Delete FROM Sales.Orders Where OrderID=@OrderID";
+                string sql = "Delete FROM HR.Employees Where EmployeeID=@EmployeeID";
                 using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
                 {
                     conn.Open();
                     SqlCommand cmd = new SqlCommand(sql, conn);
-                    cmd.Parameters.Add(new SqlParameter("@OrderID", OrderID));
+                    cmd.Parameters.Add(new SqlParameter("@EmployeeID", EmployeeID));
                     cmd.ExecuteNonQuery();
                     conn.Close();
                 }

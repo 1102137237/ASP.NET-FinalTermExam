@@ -14,10 +14,10 @@ namespace HomeWork.Models
             return System.Configuration.ConfigurationManager.ConnectionStrings["DBConnectionString"].ConnectionString.ToString();
         }
 
-        public List<Models.Employee> GetEmployeeById()
+        public List<Models.Employee> GetVal()
         {
             DataTable result = new DataTable();
-            string sql = @"SELECT EmployeeID,FirstName+LastName as LastName FROM HR.Employees";
+            string sql = @"SELECT DISTINCT A.Title,(A.Title+'-'+B.CodeVal) as Val From HR.Employees A join dbo.CodeTable B on A.Title=B.CodeId Where (B.CodeType like 'TITLE')";
 
             using (SqlConnection conn = new SqlConnection(this.GetconnectionStrings()))
             {
@@ -40,8 +40,8 @@ namespace HomeWork.Models
             {
                 result.Add(new Models.Employee()
                 {
-                    LastName = row["LastName"].ToString(),
-                    EmployeeID = (int)row["EmployeeID"]
+                    Title = (int)row["Title"],
+                    Val = row["Val"].ToString(),
                 });
             }
             return result;

@@ -25,7 +25,7 @@ namespace HomeWork.Models
         /// <summary>
         /// 職稱
         /// </summary>
-        public string Title { get; set; }
+        public int Title { get; set; }
 
         /// <summary>
         /// 稱呼
@@ -46,6 +46,8 @@ namespace HomeWork.Models
         /// 地址
         /// </summary>
         public string Address { get; set; }
+
+        public string Country { get; set; }
 
         /// <summary>
         /// 城市
@@ -71,5 +73,15 @@ namespace HomeWork.Models
         /// 管理者編號
         /// </summary>
         public int ManagerID { get; set; }
+
+        public string Name { get; set; }
+
+        public string Val { get; set; }
+
+        public string Gender { get; set; }
+
+        public string MonthlyPayment { get; set; }
+
+        public string YearlyPayment { get; set; }
     }
 }

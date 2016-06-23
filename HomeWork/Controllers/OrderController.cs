@@ -16,133 +16,32 @@ namespace HomeWork.Controllers
 
         
 
-        public ActionResult Index(Models.OrderSearch arg)
+        public ActionResult Index(Models.Employee arg)
         {
             Models.EmployeeService EmployeeService = new Models.EmployeeService();
 
-            List<Models.Employee> result = EmployeeService.GetEmployeeById();
-            List<SelectListItem> EmployeeData = new List<SelectListItem>();
-            EmployeeData.Add(new SelectListItem()
+            List<Models.Employee> result3 = EmployeeService.GetVal();
+            List<SelectListItem> ValData = new List<SelectListItem>();
+
+            foreach (var item in result3)
             {
-                Text = "",
-                Value = "",
-            });
-            ViewData["EmpData"] = EmployeeData;
-            foreach (var item in result)
-            {
-                EmployeeData.Add(new SelectListItem()
+                ValData.Add(new SelectListItem()
                 {
-                    Text = item.LastName,
-                    Value = item.EmployeeID.ToString(),
+                    Value = item.Title.ToString(),
+                    Text = item.Val.ToString(),
                 });
-                ViewData["EmpData"]= EmployeeData;
+                ViewData["ValData"] = ValData;
             }
 
-            
-            Models.ShipperService ShipperService = new Models.ShipperService();
-
-            List<Models.Shipper> result2 = ShipperService.GetShipperById();
-            List<SelectListItem> ShipperData = new List<SelectListItem>();
-            ShipperData.Add(new SelectListItem()
-            {
-                Value = "",
-                Text = ""
-            });
-            ViewData["ShipperData"] = ShipperData;
-            foreach (var item in result2)
-            {
-                ShipperData.Add(new SelectListItem()
-                {
-                    Value = item.ShipperID.ToString(),
-                    Text = item.CompanyName
-                });
-                ViewData["ShipperData"] = ShipperData;
-            }
-
-           
             Models.OrderService orderService = new Models.OrderService();
-            ViewBag.SearchResult = orderService.GetOrderByCondtioin(arg);
+            ViewBag.SearchResult = orderService.GetEmploueeByCondtioin(arg);
             return View();
         }
         
         public ActionResult InsertOrder()
         {
-            Models.EmployeeService EmployeeService = new Models.EmployeeService();
 
-            List<Models.Employee> result = EmployeeService.GetEmployeeById();
-            List<SelectListItem> EmployeeData = new List<SelectListItem>();
-           
-            foreach (var item in result)
-            {
-                EmployeeData.Add(new SelectListItem()
-                {
-                    Text = item.LastName,
-                    Value = item.EmployeeID.ToString(),
-                });
-                ViewData["EmpData"] = EmployeeData;
-            }
-
-            Models.CustomerService CustomerService = new Models.CustomerService();
-
-            List<Models.Customer> result2 = CustomerService.GetCustomerById();
-            List<SelectListItem> CustomerData = new List<SelectListItem>();
-
-            foreach (var item in result2)
-            {
-                CustomerData.Add(new SelectListItem()
-                {
-                    Text = item.CompanyName,
-                    Value = item.CustomerID.ToString(),
-                });
-                ViewData["CustomerData"] = CustomerData;
-            }
-
-            Models.ShipperService ShipperService = new Models.ShipperService();
-
-            List<Models.Shipper> result3 = ShipperService.GetShipperById();
-            List<SelectListItem> ShipperData = new List<SelectListItem>();
-            
-            foreach (var item in result3)
-            {
-                ShipperData.Add(new SelectListItem()
-                {
-                    Value = item.ShipperID.ToString(),
-                    Text = item.CompanyName
-                });
-                ViewData["ShipperData"] = ShipperData;
-            }
-
-            Models.ProductService ProductService = new Models.ProductService();
-
-            List<Models.Product> result4 = ProductService.GetProductById();
-            List<SelectListItem> ProductData = new List<SelectListItem>();
-
-            foreach (var item in result4)
-            {
-                ProductData.Add(new SelectListItem()
-                {
-                    Value = item.ProductID.ToString(),
-                    Text = item.ProductName
-                });
-                ViewData["ProductData"] = ProductData;
-            }
-            
-
-            List<Models.Product> result5 = ProductService.GetPrice();
-            List<SelectListItem> PriceData = new List<SelectListItem>();
-
-            ViewBag.PriceData = PriceData;
-            foreach (var item in result5)
-            {
-                PriceData.Add(new SelectListItem()
-                {
-                    Value = item.UnitPrice.ToString()
-                });
-                ViewBag.PriceData = PriceData;
-            }
-            
-
-            return View(new Models.Order());
+            return View(new Models.Employee());
         }
 
         /// <summary>
@@ -165,12 +64,12 @@ namespace HomeWork.Controllers
         /// <param name="OrderID"></param>
         /// <returns></returns>
         [HttpPost()]
-        public JsonResult DeleteOrder(string OrderID)
+        public JsonResult DeleteOrder(string EmployeeID)
         {
             try
             {
                 OrderService OrderService = new OrderService();
-                OrderService.DeleteOrderByID(OrderID);
+                OrderService.DeleteEmployeeByID(EmployeeID);
                 return this.Json(true);
             }
             catch (Exception)

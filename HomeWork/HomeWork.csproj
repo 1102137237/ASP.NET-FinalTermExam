@@ -211,21 +211,12 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\Customer.cs" />
-    <Compile Include="Models\CustomerService.cs" />
     <Compile Include="Models\Employee.cs" />
+    <Compile Include="Models\EmployeeSearch.cs" />
     <Compile Include="Models\EmployeeService.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
-    <Compile Include="Models\Order.cs" />
-    <Compile Include="Models\OrderDetails.cs" />
-    <Compile Include="Models\OrderDetailService.cs" />
-    <Compile Include="Models\OrderSearch.cs" />
     <Compile Include="Models\OrderService.cs" />
-    <Compile Include="Models\Product.cs" />
-    <Compile Include="Models\ProductService.cs" />
-    <Compile Include="Models\Shipper.cs" />
-    <Compile Include="Models\ShipperService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
